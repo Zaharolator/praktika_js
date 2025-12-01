@@ -4,7 +4,7 @@ import { useUsersDispatch, useUsersState } from "../context/UsersContext";
 const SearchBar = React.memo(function SearchBar() {
     const dispatch = useUsersDispatch();
     const { search } = useUsersState();
-    const [value, setValue] = useState(search || "");
+    const [value, setValue] = useState(() => search || "");
 
     useEffect(() => {
         setValue(search || "");

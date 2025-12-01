@@ -3,21 +3,34 @@ import React, { createContext, useContext, useReducer, useMemo } from "react";
 const UsersStateContext = createContext();
 const UsersDispatchContext = createContext();
 
+// JEDNA definicja initialState
 const initialState = {
     originalUsers: [],
     search: "",
     sortBy: "name",
-    sortOrder: "asc" // or 'desc'
+    sortOrder: "asc", // or 'desc'
+    loading: false,   // ✅ Dodane
+    error: null       // ✅ Dodane
 };
 
+// JEDNA definicja reducera
 function usersReducer(state, action) {
     switch (action.type) {
         case "SET_USERS":
-            return { ...state, originalUsers: action.payload || [] };
+            return {
+                ...state,
+                originalUsers: action.payload || [],
+                loading: false,
+                error: null
+            };
         case "SET_SEARCH":
             return { ...state, search: action.payload };
         case "SET_SORT":
             return { ...state, sortBy: action.payload.sortBy, sortOrder: action.payload.sortOrder };
+        case "SET_LOADING":        // ✅ Dodane
+            return { ...state, loading: action.payload };
+        case "SET_ERROR":          // ✅ Dodane
+            return { ...state, error: action.payload };
         default:
             throw new Error(`Unknown action: ${action.type}`);
     }
@@ -43,8 +56,8 @@ export function UsersProvider({ children, initialUsers = [] }) {
 
         // sorting
         list.sort((a, b) => {
-            const aVal = String(a[sortBy] || "").toLowerCase();
-            const bVal = String(b[sortBy] || "").toLowerCase();
+            const aVal = String(a[sortBy] ?? "").toLowerCase();
+            const bVal = String(b[sortBy] ?? "").toLowerCase();
             if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
             if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
             return 0;
